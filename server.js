@@ -20,6 +20,11 @@ app.use(express.json());
 // Servir archivos estáticos del frontend
 app.use(express.static(__dirname));
 
+// Ruta principal → cargar la interfaz de FARMABOL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'FARMABOL.html'));
+});
+
 // Inicializar la base de datos
 try {
   await initDatabase();
