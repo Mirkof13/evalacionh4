@@ -20,10 +20,23 @@ const FarmaLogin = ({ onLogin }) => {
     setError('');
   };
 
-  const submit = () => {
-    const u = store.get().usuarios.find((x) => x.usuario === usuario.trim() && x.pass === pass);
-    if (!u) { setError('Usuario o contraseña incorrectos'); return; }
-    onLogin(u);
+  const submit = async () => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario: usuario.trim(), pass })
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        setError(err.message || 'Usuario o contraseña incorrectos');
+        return;
+      }
+      const u = await response.json();
+      onLogin(u);
+    } catch (e) {
+      setError('Error de conexión con el servidor.');
+    }
   };
 
   return (

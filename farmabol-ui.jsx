@@ -88,7 +88,7 @@ const ProductForm = ({ producto, onClose }) => {
 
   const valid = form.codigo.trim() && form.nombre.trim() && form.precio !== '' && form.stock !== '';
 
-  const save = () => {
+  const save = async () => {
     if (!valid) { toast('Completa código, nombre, precio y stock', 'warn'); return; }
     const payload = {
       codigo: form.codigo.trim().toUpperCase(),
@@ -98,9 +98,18 @@ const ProductForm = ({ producto, onClose }) => {
       laboratorio: form.laboratorio,
       categoria: form.categoria,
     };
-    if (isEdit) { store.updateProducto(producto.id, payload); toast('Producto actualizado'); }
-    else { store.addProducto(payload); toast('Producto creado'); }
-    onClose();
+    try {
+      if (isEdit) {
+        await store.updateProducto(producto.id, payload);
+        toast('Producto actualizado');
+      } else {
+        await store.addProducto(payload);
+        toast('Producto creado');
+      }
+      onClose();
+    } catch (err) {
+      toast(err.message || 'Error al guardar producto', 'danger');
+    }
   };
 
   const MI = window.Icons;

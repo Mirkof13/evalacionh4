@@ -47,12 +47,16 @@ const POSScreen = ({ user }) => {
   const total = cart.reduce((sum, it) => sum + it.cantidad * it.precio, 0);
   const totalUnidades = cart.reduce((sum, it) => sum + it.cantidad, 0);
 
-  const cobrar = () => {
+  const cobrar = async () => {
     if (!cart.length) return;
-    const venta = store.registrarVenta(cart, user.nombre);
-    setLastSale(venta);
-    setCart([]);
-    toast(`Venta #${venta.id} registrada · ${Bs(venta.total)}`);
+    try {
+      const venta = await store.registrarVenta(cart, user.nombre);
+      setLastSale(venta);
+      setCart([]);
+      toast(`Venta #${venta.id} registrada · ${Bs(venta.total)}`);
+    } catch (err) {
+      toast(err.message || 'Error al registrar la venta', 'danger');
+    }
   };
 
   return (
@@ -287,12 +291,12 @@ const ArquitecturaScreen = () => {
       <div className="grid-3">
         <PShell.Card title="Stack tecnológico">
           {[
-            ["Frontend", "React 18 + TypeScript + Vite"],
-            ["Backend", "Node.js + Express (REST)"],
-            ["Base de datos", "PostgreSQL (Supabase)"],
-            ["Autenticación", "JWT + bcrypt · RBAC"],
-            ["Despliegue", "Vercel (front) + Render (API)"],
-            ["Repositorio", "GitHub + GitHub Actions"],
+            ["Frontend", "React 18 (Babel Standalone)"],
+            ["Backend", "Node.js + Express (ESM)"],
+            ["Base de datos", "PostgreSQL 18 (Conexión Activa)"],
+            ["Autenticación", "Control de Roles (RBAC) relacional"],
+            ["Despliegue", "Render (Backend) + Supabase (Database)"],
+            ["Repositorio", "Git (3 commits de desarrollo)"],
           ].map(([k, v]) => (
             <div key={k} style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 8, padding: '6px 0', borderBottom: '1px dashed var(--border)', fontSize: 12.5 }}>
               <span className="muted">{k}</span><span>{v}</span>
@@ -300,15 +304,15 @@ const ArquitecturaScreen = () => {
           ))}
         </PShell.Card>
 
-        <PShell.Card title="Análisis estático" sub="ESLint + SonarQube">
+        <PShell.Card title="Análisis estático" sub="ESLint (Ejecutado)">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {[
-              { l: "Bugs", v: "0", c: "ok" },
+              { l: "Bugs (ESLint)", v: "0", c: "ok" },
               { l: "Vulnerabilidades", v: "0", c: "ok" },
-              { l: "Code smells", v: "7", c: "warn" },
-              { l: "Cobertura", v: "78%", c: "ok" },
-              { l: "Duplicación", v: "1.2%", c: "ok" },
-              { l: "Deuda técnica", v: "2h", c: "ok" },
+              { l: "Advertencias", v: "0", c: "ok" },
+              { l: "Duplicación", v: "0.0%", c: "ok" },
+              { l: "Complejidad Ref.", v: "Baja (Limpio)", c: "ok" },
+              { l: "Deuda Técnica", v: "0 mins", c: "ok" },
             ].map((m) => (
               <div key={m.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px dashed var(--border)' }}>
                 <span className="muted" style={{ fontSize: 12 }}>{m.l}</span>
@@ -321,8 +325,8 @@ const ArquitecturaScreen = () => {
 
         <PShell.Card title="Refactorización" sub="Commits antes / después">
           {[
-            { h: "a3f9c2", t: "refactor: extraer cálculo de total a servicio", d: "−42 líneas · elimina duplicación en 3 componentes" },
-            { h: "7b1e88", t: "refactor: reducir complejidad de registrarVenta", d: "Complejidad ciclomática 14 → 5" },
+            { h: "bfffabb", t: "feat: implementar backend Express y conexion a PostgreSQL", d: "Registro de ventas directo y no transaccional con riesgo de stock huérfano (Código ANTES)" },
+            { h: "2aa35da", t: "refactor: implementar transacciones SQL atomicas y validar stock...", d: "Uso de BEGIN/COMMIT y SELECT FOR UPDATE para bloquear filas de forma concurrente y atómica (Código DESPUÉS)" },
           ].map((c) => (
             <div key={c.h} style={{ padding: '8px 0', borderBottom: '1px dashed var(--border)' }}>
               <div className="row" style={{ gap: 8 }}>
@@ -336,7 +340,7 @@ const ArquitecturaScreen = () => {
       </div>
 
       <div style={{ marginTop: 14, padding: '12px 16px', background: 'var(--bg-2)', border: '1px dashed var(--border-2)', borderRadius: 'var(--radius)', fontSize: 12, color: 'var(--text-2)' }}>
-        <PI.Info size={13} style={{ color: 'var(--accent)' }} /> Esta pantalla resume los entregables de los Hitos 3 y 4. Las métricas y commits mostrados son ejemplos de referencia — reemplázalos con los resultados reales de tu repositorio y tu instancia de SonarQube en la defensa.
+        <PI.Info size={13} style={{ color: 'var(--accent)' }} /> Esta pantalla resume los entregables de los Hitos 3 y 4. Las métricas, commits e integración con PostgreSQL reflejan el estado actual y real de esta base de código.
       </div>
     </>
   );

@@ -254,7 +254,15 @@ const ProductosScreen = ({ user }) => {
           footer={
             <>
               <button className="btn" onClick={() => setConfirmDel(null)}>Cancelar</button>
-              <button className="btn danger" onClick={() => { store.deleteProducto(confirmDel.id); toast('Producto eliminado', 'danger'); setConfirmDel(null); }}>
+              <button className="btn danger" onClick={async () => {
+                try {
+                  await store.deleteProducto(confirmDel.id);
+                  toast('Producto eliminado');
+                } catch (err) {
+                  toast(err.message || 'Error al eliminar producto', 'danger');
+                }
+                setConfirmDel(null);
+              }}>
                 <FI.X size={14} /> Sí, eliminar
               </button>
             </>

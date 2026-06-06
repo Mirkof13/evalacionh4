@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initDatabase, query } from './db.js';
+import pool, { initDatabase, query } from './db.js';
 
 dotenv.config();
 

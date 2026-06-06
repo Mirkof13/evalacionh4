@@ -43,7 +43,16 @@ const FarmaTweaks = ({ tweaks, setTweak, onClose }) => {
         <div className="tweak-group">
           <div className="label">Datos de demostración</div>
           <button className="btn ghost sm" style={{ justifyContent: 'flex-start' }}
-                  onClick={() => { if (confirm('¿Restablecer productos y ventas a los datos iniciales?')) window.FarmabolStore.reset(); }}>
+                  onClick={async () => {
+                    if (confirm('¿Restablecer productos y ventas a los datos iniciales?')) {
+                      try {
+                        await window.FarmabolStore.reset();
+                        alert('Base de datos restablecida con éxito.');
+                      } catch (err) {
+                        alert('Error al restablecer la base de datos: ' + err.message);
+                      }
+                    }
+                  }}>
             <TI.Refresh size={12} /> Restablecer base de datos
           </button>
           <div className="muted-2" style={{ fontSize: 10.5, lineHeight: 1.5 }}>
@@ -51,7 +60,7 @@ const FarmaTweaks = ({ tweaks, setTweak, onClose }) => {
           </div>
         </div>
         <div className="muted-2" style={{ fontSize: 10, lineHeight: 1.5, paddingTop: 8, borderTop: '1px dashed var(--border)' }}>
-          Los cambios y ventas se guardan en este navegador (localStorage).
+          Los cambios y ventas se guardan en la base de datos PostgreSQL.
         </div>
       </div>
     </div>
