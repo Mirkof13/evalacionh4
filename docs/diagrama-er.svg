@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 680" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    
+    <!-- Table Header Gradients -->
+    <linearGradient id="userHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="saleHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="detailHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="productHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ec4899" />
+      <stop offset="100%" stop-color="#db2777" />
+    </linearGradient>
+
+    <!-- Shadow Filter -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="680" rx="12" fill="url(#bgGrad)" />
+  <rect width="960" height="680" rx="12" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Title -->
+  <text x="480" y="40" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="bold" letter-spacing="1">
+    DIAGRAMA ENTIDAD-RELACIÓN (ERD) — FARMABOL
+  </text>
+  <text x="480" y="65" text-anchor="middle" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="14">
+    Esquema Físico de Base de Datos PostgreSQL con Integridad Referencial
+  </text>
+
+  <!-- ================= TABLE: usuarios ================= -->
+  <g transform="translate(60, 120)" filter="url(#dropShadow)">
+    <rect width="220" height="180" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+    <!-- Header -->
+    <rect width="220" height="35" rx="6" fill="url(#userHeader)"/>
+    <rect y="29" width="220" height="6" fill="#1e293b" />
+    <text x="110" y="22" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold">🔑 usuarios</text>
+    
+    <!-- Columns -->
+    <text x="12" y="55" fill="#38bdf8" font-family="monospace" font-size="11">id: SERIAL [PK]</text>
+    <text x="12" y="75" fill="#f1f5f9" font-family="monospace" font-size="11">usuario: VARCHAR(50) [UK]</text>
+    <text x="12" y="95" fill="#f1f5f9" font-family="monospace" font-size="11">pass: VARCHAR(255)</text>
+    <text x="12" y="115" fill="#f1f5f9" font-family="monospace" font-size="11">nombre: VARCHAR(100)</text>
+    <text x="12" y="135" fill="#f1f5f9" font-family="monospace" font-size="11">rol: VARCHAR(20)</text>
+    <text x="12" y="155" fill="#f1f5f9" font-family="monospace" font-size="11">sucursal: VARCHAR(50)</text>
+  </g>
+
+  <!-- ================= TABLE: ventas ================= -->
+  <g transform="translate(370, 120)" filter="url(#dropShadow)">
+    <rect width="220" height="140" rx="6" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+    <!-- Header -->
+    <rect width="220" height="35" rx="6" fill="url(#saleHeader)"/>
+    <rect y="29" width="220" height="6" fill="#1e293b" />
+    <text x="110" y="22" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold">📝 ventas</text>
+    
+    <!-- Columns -->
+    <text x="12" y="55" fill="#0ea5e9" font-family="monospace" font-size="11">id: SERIAL [PK]</text>
+    <text x="12" y="75" fill="#f1f5f9" font-family="monospace" font-size="11">fecha: TIMESTAMP</text>
+    <text x="12" y="95" fill="#38bdf8" font-family="monospace" font-size="11">vendedor: VARCHAR [FK]</text>
+    <text x="12" y="115" fill="#f1f5f9" font-family="monospace" font-size="11">total: DECIMAL(10,2)</text>
+  </g>
+
+  <!-- ================= TABLE: productos ================= -->
+  <g transform="translate(680, 350)" filter="url(#dropShadow)">
+    <rect width="220" height="200" rx="6" fill="#1e293b" stroke="#ec4899" stroke-width="1.5"/>
+    <!-- Header -->
+    <rect width="220" height="35" rx="6" fill="url(#productHeader)"/>
+    <rect y="29" width="220" height="6" fill="#1e293b" />
+    <text x="110" y="22" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold">💊 productos</text>
+    
+    <!-- Columns -->
+    <text x="12" y="55" fill="#ec4899" font-family="monospace" font-size="11">id: SERIAL [PK]</text>
+    <text x="12" y="75" fill="#f1f5f9" font-family="monospace" font-size="11">codigo: VARCHAR(50) [UK]</text>
+    <text x="12" y="95" fill="#f1f5f9" font-family="monospace" font-size="11">nombre: VARCHAR(150)</text>
+    <text x="12" y="115" fill="#f1f5f9" font-family="monospace" font-size="11">precio: DECIMAL(10,2)</text>
+    <text x="12" y="135" fill="#f1f5f9" font-family="monospace" font-size="11">stock: INT</text>
+    <text x="12" y="155" fill="#f1f5f9" font-family="monospace" font-size="11">laboratorio: VARCHAR(100)</text>
+    <text x="12" y="175" fill="#f1f5f9" font-family="monospace" font-size="11">categoria: VARCHAR(100)</text>
+  </g>
+
+  <!-- ================= TABLE: detalle_ventas ================= -->
+  <g transform="translate(370, 350)" filter="url(#dropShadow)">
+    <rect width="220" height="200" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <!-- Header -->
+    <rect width="220" height="35" rx="6" fill="url(#detailHeader)"/>
+    <rect y="29" width="220" height="6" fill="#1e293b" />
+    <text x="110" y="22" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold">📋 detalle_ventas</text>
+    
+    <!-- Columns -->
+    <text x="12" y="55" fill="#10b981" font-family="monospace" font-size="11">id: SERIAL [PK]</text>
+    <text x="12" y="75" fill="#38bdf8" font-family="monospace" font-size="11">venta_id: INT [FK]</text>
+    <text x="12" y="95" fill="#ec4899" font-family="monospace" font-size="11">producto_id: INT [FK]</text>
+    <text x="12" y="115" fill="#f1f5f9" font-family="monospace" font-size="11">codigo: VARCHAR(50)</text>
+    <text x="12" y="135" fill="#f1f5f9" font-family="monospace" font-size="11">nombre: VARCHAR(150)</text>
+    <text x="12" y="155" fill="#f1f5f9" font-family="monospace" font-size="11">cantidad: INT</text>
+    <text x="12" y="175" fill="#f1f5f9" font-family="monospace" font-size="11">precio: DECIMAL(10,2)</text>
+  </g>
+
+  <!-- ================= RELATIONSHIP LINES ================= -->
+
+  <!-- 1. usuarios.usuario (1) -- (0..N) ventas.vendedor -->
+  <g>
+    <!-- Line from usuarios to ventas -->
+    <path d="M 280 210 L 370 210" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+    
+    <!-- Crows foot notation on ventas side (0..N) -->
+    <circle cx="355" cy="210" r="3" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5" />
+    <path d="M 362 205 L 370 210 L 362 215" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+    
+    <!-- Crows foot (1) on usuarios side -->
+    <line x1="290" y1="205" x2="290" y2="215" stroke="#94a3b8" stroke-width="1.5" />
+    <line x1="295" y1="205" x2="295" y2="215" stroke="#94a3b8" stroke-width="1.5" />
+  </g>
+
+  <!-- 2. ventas.id (1) -- (1..N) detalle_ventas.venta_id -->
+  <g>
+    <!-- Line from ventas (bottom) to detalle_ventas (top) -->
+    <path d="M 480 260 L 480 350" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+    
+    <!-- Crows foot (1..N) on detalle_ventas side -->
+    <line x1="475" y1="335" x2="485" y2="335" stroke="#94a3b8" stroke-width="1.5" />
+    <path d="M 475 342 L 480 350 L 485 342" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+    
+    <!-- Crows foot (1) on ventas side -->
+    <line x1="475" y1="270" x2="485" y2="270" stroke="#94a3b8" stroke-width="1.5" />
+    <line x1="475" y1="275" x2="485" y2="275" stroke="#94a3b8" stroke-width="1.5" />
+  </g>
+
+  <!-- 3. productos.id (1) -- (0..N) detalle_ventas.producto_id -->
+  <g>
+    <!-- Line from productos to detalle_ventas -->
+    <path d="M 680 450 L 590 450" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+    
+    <!-- Crows foot notation on detalle_ventas side (0..N) -->
+    <circle cx="605" cy="450" r="3" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5" />
+    <path d="M 598 445 L 590 450 L 598 455" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+    
+    <!-- Crows foot (1) on productos side -->
+    <line x1="670" y1="445" x2="670" y2="455" stroke="#94a3b8" stroke-width="1.5" />
+    <line x1="665" y1="445" x2="665" y2="455" stroke="#94a3b8" stroke-width="1.5" />
+  </g>
+
+</svg>
