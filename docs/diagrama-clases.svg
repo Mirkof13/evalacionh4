@@ -139,7 +139,7 @@
 
   <!-- ================= ASSOCIATIONS / RELATIONSHIPS ================= -->
 
-  <!-- 1. Usuario (1) --- (0..*) Venta (registra) -->
+  <!-- 1. Usuario (1) to (0..*) Venta (registra) -->
   <g>
     <line x1="280" y1="200" x2="370" y2="200" stroke="#64748b" stroke-width="1.5" />
     <!-- Navigation arrow to Venta -->
@@ -151,7 +151,7 @@
     <text x="325" y="215" text-anchor="middle" fill="#64748b" font-family="system-ui, sans-serif" font-size="10">registra</text>
   </g>
 
-  <!-- 2. Venta (1) *---# DetalleVenta (1..*) (Composition) -->
+  <!-- 2. Venta (1) with DetalleVenta (1..*) (Composition) -->
   <!-- Composition relationship: Diamond on Venta side, line down to DetalleVenta -->
   <g>
     <!-- Line from bottom of Venta (480, 290) to top of DetalleVenta (480, 370) -->
@@ -167,7 +167,7 @@
     <text x="445" y="338" fill="#64748b" font-family="system-ui, sans-serif" font-size="10">contiene</text>
   </g>
 
-  <!-- 3. Producto (1) --- (0..*) DetalleVenta (se vende en) -->
+  <!-- 3. Producto (1) to (0..*) DetalleVenta (se vende en) -->
   <g>
     <line x1="680" y1="480" x2="590" y2="480" stroke="#64748b" stroke-width="1.5" />
     <!-- Navigation arrow to DetalleVenta -->

@@ -112,7 +112,7 @@
 
   <!-- ================= RELATIONSHIP LINES ================= -->
 
-  <!-- 1. usuarios.usuario (1) -- (0..N) ventas.vendedor -->
+  <!-- 1. usuarios.usuario (1) to (0..N) ventas.vendedor -->
   <g>
     <!-- Line from usuarios to ventas -->
     <path d="M 280 210 L 370 210" fill="none" stroke="#94a3b8" stroke-width="1.5" />
@@ -126,7 +126,7 @@
     <line x1="295" y1="205" x2="295" y2="215" stroke="#94a3b8" stroke-width="1.5" />
   </g>
 
-  <!-- 2. ventas.id (1) -- (1..N) detalle_ventas.venta_id -->
+  <!-- 2. ventas.id (1) to (1..N) detalle_ventas.venta_id -->
   <g>
     <!-- Line from ventas (bottom) to detalle_ventas (top) -->
     <path d="M 480 260 L 480 350" fill="none" stroke="#94a3b8" stroke-width="1.5" />
@@ -140,7 +140,7 @@
     <line x1="475" y1="275" x2="485" y2="275" stroke="#94a3b8" stroke-width="1.5" />
   </g>
 
-  <!-- 3. productos.id (1) -- (0..N) detalle_ventas.producto_id -->
+  <!-- 3. productos.id (1) to (0..N) detalle_ventas.producto_id -->
   <g>
     <!-- Line from productos to detalle_ventas -->
     <path d="M 680 450 L 590 450" fill="none" stroke="#94a3b8" stroke-width="1.5" />
