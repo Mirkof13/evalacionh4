@@ -1,0 +1,212 @@
+import pg from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const { Pool, Client } = pg;
+
+// Variables de entorno de conexión
+const dbConfig = {
+  user: process.env.PGUSER || 'postgres',
+  password: process.env.PGPASSWORD || 'postgres',
+  host: process.env.PGHOST || 'localhost',
+  port: parseInt(process.env.PGPORT || '5432'),
+  database: process.env.PGDATABASE || 'farmabol'
+};
+
+// Crear base de datos si no existe
+async function ensureDatabaseExists() {
+  const testClient = new Client({
+    user: dbConfig.user,
+    password: dbConfig.password,
+    host: dbConfig.host,
+    port: dbConfig.port,
+    database: 'postgres' // Conectar a base de datos de administración por defecto
+  });
+
+  try {
+    await testClient.connect();
+    const res = await testClient.query(
+      `SELECT 1 FROM pg_database WHERE datname = $1`,
+      [dbConfig.database]
+    );
+
+    if (res.rowCount === 0) {
+      console.log(`Base de datos '${dbConfig.database}' no existe. Creándola...`);
+      // CREATE DATABASE no se puede ejecutar en bloques transaccionales o parametrizados
+      await testClient.query(`CREATE DATABASE "${dbConfig.database}"`);
+      console.log(`Base de datos '${dbConfig.database}' creada con éxito.`);
+    }
+  } catch (err) {
+    console.error('Error al verificar/crear la base de datos:', err.message);
+    console.error('Asegúrate de que PostgreSQL esté corriendo y que tus credenciales en el archivo .env sean correctas.');
+  } finally {
+    await testClient.end();
+  }
+}
+
+// Inicializar el Pool
+await ensureDatabaseExists();
+const pool = new Pool(dbConfig);
+
+export const query = (text, params) => pool.query(text, params);
+
+export async function initDatabase() {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Crear tabla usuarios
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        usuario VARCHAR(50) UNIQUE NOT NULL,
+        pass VARCHAR(255) NOT NULL,
+        nombre VARCHAR(100) NOT NULL,
+        rol VARCHAR(20) NOT NULL,
+        sucursal VARCHAR(100) NOT NULL
+      )
+    `);
+
+    // 2. Crear tabla productos
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS productos (
+        id SERIAL PRIMARY KEY,
+        codigo VARCHAR(50) UNIQUE NOT NULL,
+        nombre VARCHAR(100) NOT NULL,
+        precio NUMERIC(10, 2) NOT NULL,
+        stock INT NOT NULL CHECK (stock >= 0),
+        laboratorio VARCHAR(100) NOT NULL,
+        categoria VARCHAR(100) NOT NULL
+      )
+    `);
+
+    // 3. Crear tabla ventas
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS ventas (
+        id SERIAL PRIMARY KEY,
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        vendedor VARCHAR(100) NOT NULL,
+        total NUMERIC(10, 2) NOT NULL
+      )
+    `);
+
+    // 4. Crear tabla detalle_ventas
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS detalle_ventas (
+        id SERIAL PRIMARY KEY,
+        venta_id INT REFERENCES ventas(id) ON DELETE CASCADE,
+        producto_id INT REFERENCES productos(id) ON DELETE SET NULL,
+        codigo VARCHAR(50) NOT NULL,
+        nombre VARCHAR(100) NOT NULL,
+        cantidad INT NOT NULL CHECK (cantidad > 0),
+        precio NUMERIC(10, 2) NOT NULL
+      )
+    `);
+
+    // Verificar si hay usuarios para sembrar los datos
+    const userCheck = await client.query('SELECT COUNT(*) FROM usuarios');
+    if (parseInt(userCheck.rows[0].count) === 0) {
+      console.log('Sembrando datos iniciales en las tablas...');
+
+      // Sembrar usuarios
+      await client.query(`
+        INSERT INTO usuarios (usuario, pass, nombre, rol, sucursal) VALUES
+        ('admin', 'admin123', 'Carlos Mendoza', 'ADMIN', 'Central La Paz'),
+        ('vendedor', 'venta123', 'Ana Quispe', 'VENDEDOR', 'Sucursal Miraflores')
+      `);
+
+      // Sembrar productos
+      await client.query(`
+        INSERT INTO productos (codigo, nombre, precio, stock, laboratorio, categoria) VALUES
+        ('PARA-500', 'Paracetamol 500mg x10', 8.50, 142, 'Inti', 'Analgésico'),
+        ('IBUP-400', 'Ibuprofeno 400mg x10', 12.00, 88, 'Bagó', 'Antiinflamatorio'),
+        ('AMOX-500', 'Amoxicilina 500mg x12', 35.00, 4, 'Vita', 'Antibiótico'),
+        ('OMEP-20', 'Omeprazol 20mg x14', 28.50, 56, 'Inti', 'Gastrointestinal'),
+        ('LORA-10', 'Loratadina 10mg x10', 15.00, 3, 'Bagó', 'Antialérgico'),
+        ('METF-850', 'Metformina 850mg x30', 42.00, 67, 'Vita', 'Antidiabético'),
+        ('ENAL-10', 'Enalapril 10mg x20', 24.00, 39, 'Inti', 'Antihipertensivo'),
+        ('SALB-INH', 'Salbutamol inhalador', 58.00, 22, 'Bayer', 'Respiratorio'),
+        ('AMOX-SUS', 'Amoxicilina susp. 250mg', 32.50, 2, 'Vita', 'Antibiótico'),
+        ('DICL-50', 'Diclofenaco 50mg x20', 18.00, 95, 'Bagó', 'Antiinflamatorio'),
+        ('VITC-1G', 'Vitamina C 1g efervesc.', 22.00, 110, 'Bayer', 'Suplemento'),
+        ('AZIT-500', 'Azitromicina 500mg x3', 45.00, 1, 'Inti', 'Antibiótico'),
+        ('RANI-150', 'Ranitidina 150mg x20', 16.50, 48, 'Vita', 'Gastrointestinal'),
+        ('PARA-JBE', 'Paracetamol jarabe niños', 19.00, 73, 'Inti', 'Analgésico'),
+        ('LOSA-50', 'Losartán 50mg x30', 38.00, 31, 'Bagó', 'Antihipertensivo')
+      `);
+
+      // Sembrar ventas
+      // Venta 1: Paracetamol x3, Vitamina C x1
+      const v1 = await client.query(`
+        INSERT INTO ventas (fecha, vendedor, total)
+        VALUES ('2026-06-05 08:42:00', 'Ana Quispe', 47.50) RETURNING id
+      `);
+      const v1Id = v1.rows[0].id;
+      await client.query(`
+        INSERT INTO detalle_ventas (venta_id, producto_id, codigo, nombre, cantidad, precio)
+        VALUES 
+        (${v1Id}, 1, 'PARA-500', 'Paracetamol 500mg x10', 3, 8.50),
+        (${v1Id}, 11, 'VITC-1G', 'Vitamina C 1g efervesc.', 1, 22.00)
+      `);
+
+      // Venta 2: Ibuprofeno x2
+      const v2 = await client.query(`
+        INSERT INTO ventas (fecha, vendedor, total)
+        VALUES ('2026-06-05 09:15:00', 'Ana Quispe', 24.00) RETURNING id
+      `);
+      const v2Id = v2.rows[0].id;
+      await client.query(`
+        INSERT INTO detalle_ventas (venta_id, producto_id, codigo, nombre, cantidad, precio)
+        VALUES (${v2Id}, 2, 'IBUP-400', 'Ibuprofeno 400mg x10', 2, 12.00)
+      `);
+
+      // Venta 3: Omeprazol x1, Diclofenaco x1
+      const v3 = await client.query(`
+        INSERT INTO ventas (fecha, vendedor, total)
+        VALUES ('2026-06-05 10:03:00', 'Carlos Mendoza', 46.50) RETURNING id
+      `);
+      const v3Id = v3.rows[0].id;
+      await client.query(`
+        INSERT INTO detalle_ventas (venta_id, producto_id, codigo, nombre, cantidad, precio)
+        VALUES 
+        (${v3Id}, 4, 'OMEP-20', 'Omeprazol 20mg x14', 1, 28.50),
+        (${v3Id}, 10, 'DICL-50', 'Diclofenaco 50mg x20', 1, 18.00)
+      `);
+
+      // Venta 4: Metformina x2
+      const v4 = await client.query(`
+        INSERT INTO ventas (fecha, vendedor, total)
+        VALUES ('2026-06-05 11:28:00', 'Ana Quispe', 84.00) RETURNING id
+      `);
+      const v4Id = v4.rows[0].id;
+      await client.query(`
+        INSERT INTO detalle_ventas (venta_id, producto_id, codigo, nombre, cantidad, precio)
+        VALUES (${v4Id}, 6, 'METF-850', 'Metformina 850mg x30', 2, 42.00)
+      `);
+
+      // Venta 5: Salbutamol x1 (Día anterior)
+      const v5 = await client.query(`
+        INSERT INTO ventas (fecha, vendedor, total)
+        VALUES ('2026-06-04 16:50:00', 'Ana Quispe', 58.00) RETURNING id
+      `);
+      const v5Id = v5.rows[0].id;
+      await client.query(`
+        INSERT INTO detalle_ventas (venta_id, producto_id, codigo, nombre, cantidad, precio)
+        VALUES (${v5Id}, 8, 'SALB-INH', 'Salbutamol inhalador', 1, 58.00)
+      `);
+
+      console.log('Siembra de datos completada.');
+    }
+
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Error al inicializar la base de datos:', err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+export default pool;
