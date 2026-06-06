@@ -165,11 +165,12 @@ app.delete('/api/productos/:id', async (req, res) => {
 });
 
 // ----------------------------------------------------------------
-// 4. Registro de Ventas (Código Naive / ANTES de Refactorizar)
+// 4. Registro de Ventas (Código Refactorizado / DESPUÉS de Refactorizar)
 // ----------------------------------------------------------------
-// [!] ATENCIÓN: Este endpoint es no atómico. Ejecuta múltiples consultas
-// secuenciales fuera de una transacción. Si hay un fallo intermedio o stock
-// insuficiente a mitad de camino, causará inconsistencia de datos (stock huérfano).
+// [✓] MEJORA DE CALIDAD: Este endpoint utiliza transacciones atómicas (BEGIN/COMMIT/ROLLBACK)
+// y SELECT FOR UPDATE para bloquear las filas durante la validación de stock.
+// Si ocurre un error o el stock es insuficiente, la transacción se aborta por completo (ROLLBACK),
+// manteniendo la consistencia de la base de datos sin deducciones de stock huérfanas.
 app.post('/api/ventas', async (req, res) => {
   const { items, vendedor } = req.body;
   
@@ -177,55 +178,69 @@ app.post('/api/ventas', async (req, res) => {
     return res.status(400).json({ message: 'La venta debe contener al menos un producto.' });
   }
 
+  const client = await pool.connect();
   try {
-    let totalVenta = 0;
+    await client.query('BEGIN');
     
-    // Primero calculamos el total sumando los precios (duplicado en backend)
+    let totalVenta = 0;
+    const itemsProcesados = [];
+
+    // 1. Validar stock y bloquear filas para prevenir condiciones de carrera
     for (const it of items) {
-      totalVenta += it.cantidad * it.precio;
+      const prodRes = await client.query(
+        'SELECT id, stock, nombre, precio FROM productos WHERE codigo = $1 FOR UPDATE',
+        [it.codigo]
+      );
+      
+      if (prodRes.rows.length === 0) {
+        throw new Error(`El producto con código ${it.codigo} no existe.`);
+      }
+
+      const prod = prodRes.rows[0];
+
+      if (parseInt(prod.stock) < it.cantidad) {
+        throw new Error(`Stock insuficiente para ${prod.nombre}. Disponible: ${prod.stock}, Solicitado: ${it.cantidad}`);
+      }
+
+      const precioReal = parseFloat(prod.precio);
+      totalVenta += it.cantidad * precioReal;
+
+      itemsProcesados.push({
+        id: prod.id,
+        codigo: it.codigo,
+        nombre: prod.nombre,
+        cantidad: it.cantidad,
+        precio: precioReal
+      });
     }
 
-    // Insertar la venta
-    const ventaRes = await query(
+    // 2. Insertar la cabecera de la venta
+    const ventaRes = await client.query(
       'INSERT INTO ventas (vendedor, total) VALUES ($1, $2) RETURNING id',
       [vendedor, totalVenta]
     );
     const ventaId = ventaRes.rows[0].id;
 
-    // Procesar cada ítem del carrito secuencialmente sin transacción SQL
-    for (const it of items) {
-      // 1. Obtener producto para ver si hay stock disponible
-      const prodRes = await query('SELECT id, stock, nombre FROM productos WHERE codigo = $1', [it.codigo]);
-      
-      if (prodRes.rows.length === 0) {
-        return res.status(400).json({ message: `El producto con código ${it.codigo} no existe.` });
-      }
+    // 3. Descontar stock e insertar detalles
+    for (const it of itemsProcesados) {
+      await client.query(
+        'UPDATE productos SET stock = stock - $1 WHERE id = $2',
+        [it.cantidad, it.id]
+      );
 
-      const prod = prodRes.rows[0];
-
-      // Validar si el stock es suficiente
-      if (prod.stock < it.cantidad) {
-        // [!] ERROR DE CONSISTENCIA: Ya insertamos el registro de la venta en la base de datos
-        // y pudimos haber descontado productos previos, pero aquí cancelamos y retornamos error.
-        // Esto dejará una venta registrada con ítems faltantes o stock incorrecto.
-        return res.status(400).json({ message: `Stock insuficiente para ${prod.nombre}. Disponible: ${prod.stock}` });
-      }
-
-      // 2. Descontar el stock del producto
-      const nuevoStock = prod.stock - it.cantidad;
-      await query('UPDATE productos SET stock = $1 WHERE id = $2', [nuevoStock, prod.id]);
-
-      // 3. Registrar en detalle de ventas
-      await query(
+      await client.query(
         'INSERT INTO detalle_ventas (venta_id, producto_id, codigo, nombre, cantidad, precio) VALUES ($1, $2, $3, $4, $5, $6)',
-        [ventaId, prod.id, it.codigo, it.nombre, it.cantidad, parseFloat(it.precio)]
+        [ventaId, it.id, it.codigo, it.nombre, it.cantidad, it.precio]
       );
     }
 
-    // Retornar la venta creada
+    await client.query('COMMIT');
     res.status(201).json({ id: ventaId, total: totalVenta });
   } catch (err) {
-    res.status(500).json({ message: 'Error al registrar la venta.', error: err.message });
+    await client.query('ROLLBACK');
+    res.status(400).json({ message: err.message });
+  } finally {
+    client.release();
   }
 });
 
