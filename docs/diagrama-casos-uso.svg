@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 720" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    
+    <!-- Use Case Ellipse Gradient -->
+    <linearGradient id="ucGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#115e59" />
+    </linearGradient>
+    
+    <linearGradient id="ucGradActive" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0369a1" />
+      <stop offset="100%" stop-color="#075985" />
+    </linearGradient>
+
+    <!-- Shadow Filter -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="950" height="720" rx="12" fill="url(#bgGrad)" />
+  <rect width="950" height="720" rx="12" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Title -->
+  <text x="475" y="45" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="bold" letter-spacing="1">
+    DIAGRAMA DE CASOS DE USO (UML)
+  </text>
+  <text x="475" y="70" text-anchor="middle" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="14">
+    Definición de Roles, Actores y Fronteras del Sistema FARMABOL
+  </text>
+
+  <!-- ================= SYSTEM BOUNDARY ================= -->
+  <g transform="translate(230, 100)" filter="url(#dropShadow)">
+    <rect width="490" height="580" rx="10" fill="#1e293b" fill-opacity="0.95" stroke="#475569" stroke-width="2" />
+    <!-- System Boundary Label -->
+    <text x="245" y="25" text-anchor="middle" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5">
+      SISTEMA POS - FARMABOL
+    </text>
+  </g>
+
+  <!-- ================= ACTORS ================= -->
+  
+  <!-- ACTOR 1: Vendedor (Left) -->
+  <g transform="translate(80, 280)">
+    <!-- Stick Figure Vendedor -->
+    <!-- Head -->
+    <circle cx="40" cy="40" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5" />
+    <!-- Body -->
+    <line x1="40" y1="58" x2="40" y2="110" stroke="#38bdf8" stroke-width="2.5" />
+    <!-- Arms -->
+    <line x1="15" y1="80" x2="65" y2="80" stroke="#38bdf8" stroke-width="2.5" />
+    <!-- Legs -->
+    <line x1="40" y1="110" x2="20" y2="150" stroke="#38bdf8" stroke-width="2.5" />
+    <line x1="40" y1="110" x2="60" y2="150" stroke="#38bdf8" stroke-width="2.5" />
+    <!-- Text Label -->
+    <rect x="-10" y="165" width="100" height="25" rx="4" fill="#0369a1" />
+    <text x="40" y="181" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Vendedor
+    </text>
+    <text x="40" y="200" text-anchor="middle" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="10">
+      (Personal de Ventas)
+    </text>
+  </g>
+
+  <!-- ACTOR 2: Administrador (Right) -->
+  <g transform="translate(830, 280)">
+    <!-- Stick Figure Administrador -->
+    <!-- Head -->
+    <circle cx="40" cy="40" r="18" fill="#1e293b" stroke="#f43f5e" stroke-width="2.5" />
+    <!-- Body -->
+    <line x1="40" y1="58" x2="40" y2="110" stroke="#f43f5e" stroke-width="2.5" />
+    <!-- Arms -->
+    <line x1="15" y1="80" x2="65" y2="80" stroke="#f43f5e" stroke-width="2.5" />
+    <!-- Legs -->
+    <line x1="40" y1="110" x2="20" y2="150" stroke="#f43f5e" stroke-width="2.5" />
+    <line x1="40" y1="110" x2="60" y2="150" stroke="#f43f5e" stroke-width="2.5" />
+    <!-- Text Label -->
+    <rect x="-10" y="165" width="100" height="25" rx="4" fill="#9f1239" />
+    <text x="40" y="181" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="bold">
+      Administrador
+    </text>
+    <text x="40" y="200" text-anchor="middle" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="10">
+      (Gerencia / Sistemas)
+    </text>
+  </g>
+
+  <!-- ================= USE CASES (INSIDE BOUNDARY) ================= -->
+  <!-- Center X for Use Cases is: 230 + 245 = 475 -->
+
+  <!-- UC1: Iniciar Sesión (Y: 150) -->
+  <g transform="translate(355, 140)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGradActive)" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Iniciar Sesión (Login)
+    </text>
+  </g>
+
+  <!-- UC2: Consultar Stock de Medicamentos (Y: 220) -->
+  <g transform="translate(355, 210)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGradActive)" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Consultar Catalogo/Stock
+    </text>
+  </g>
+
+  <!-- UC3: Registrar Transacción de Venta (Y: 295) -->
+  <g transform="translate(355, 280)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGradActive)" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Registrar Transacción de Venta
+    </text>
+  </g>
+
+  <!-- UC4: Gestionar Catálogo de Productos (Y: 375) -->
+  <g transform="translate(355, 360)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGrad)" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Gestionar Inventario / Catálogo
+    </text>
+  </g>
+
+  <!-- UC5: Generar Reporte de Caja Diario (Y: 450) -->
+  <g transform="translate(355, 435)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGrad)" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Generar Reporte Diario (Caja)
+    </text>
+  </g>
+
+  <!-- UC6: Generar Reporte Mensual (Y: 525) -->
+  <g transform="translate(355, 510)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGrad)" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Generar Reporte Mensual
+    </text>
+  </g>
+
+  <!-- UC7: Consultar Historial & Auditoría (Y: 600) -->
+  <g transform="translate(355, 585)" filter="url(#dropShadow)">
+    <ellipse cx="120" cy="25" rx="100" ry="22" fill="url(#ucGrad)" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="120" y="29" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold">
+      Consultar Auditoría / Estado
+    </text>
+  </g>
+
+
+  <!-- ================= ASSOCIATIONS (CONNECTIONS) ================= -->
+  
+  <!-- Vendedor (X: 120, Y: 360) Links -->
+  <!-- To UC1 (Y: 165) -->
+  <line x1="130" y1="360" x2="355" y2="162" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="1 1" />
+  <!-- To UC2 (Y: 235) -->
+  <line x1="130" y1="360" x2="355" y2="232" stroke="#38bdf8" stroke-width="1.5" />
+  <!-- To UC3 (Y: 305) -->
+  <line x1="130" y1="360" x2="355" y2="302" stroke="#38bdf8" stroke-width="1.8" />
+
+  <!-- Administrador (X: 830, Y: 360) Links -->
+  <!-- To UC1 (Y: 165) -->
+  <line x1="830" y1="360" x2="595" y2="162" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="1 1" />
+  <!-- To UC2 (Y: 235) -->
+  <line x1="830" y1="360" x2="595" y2="232" stroke="#f43f5e" stroke-width="1.5" />
+  <!-- To UC3 (Y: 305) -->
+  <line x1="830" y1="360" x2="595" y2="302" stroke="#f43f5e" stroke-width="1.5" />
+  <!-- To UC4 (Y: 385) -->
+  <line x1="830" y1="360" x2="595" y2="382" stroke="#f43f5e" stroke-width="1.8" />
+  <!-- To UC5 (Y: 460) -->
+  <line x1="830" y1="360" x2="595" y2="457" stroke="#f43f5e" stroke-width="1.8" />
+  <!-- To UC6 (Y: 535) -->
+  <line x1="830" y1="360" x2="595" y2="532" stroke="#f43f5e" stroke-width="1.8" />
+  <!-- To UC7 (Y: 610) -->
+  <line x1="830" y1="360" x2="595" y2="607" stroke="#f43f5e" stroke-width="1.8" />
+
+</svg>
